@@ -1,3 +1,6 @@
 {
-  "extends": "electrode-archetype-react-app-dev/config/babel/babelrc-client"
+  "extends": "electrode-archetype-react-app-dev/config/babel/babelrc-client",
+  "plugins": [
+    "dynamic-import-webpack"
+  ]
 }

@@ -37,4 +37,47 @@ process.env.SERVER_ES6 = true;
 
 // process.env.WEBPACK_DEV_HTTPS = true;
 
-require("electrode-archetype-react-app")();
+const archetype = require("electrode-archetype-react-app/config/archetype");
+
+const Path = require("path");
+const devRequire = archetype.devRequire;
+
+const xsh = devRequire("xsh");
+const exec = xsh.exec;
+const mkCmd = xsh.mkCmd;
+
+const AppMode = archetype.AppMode;
+const eTmpDir = archetype.eTmpDir;
+
+const xclap = devRequire("xclap");
+require("electrode-archetype-react-app")(xclap);
+
+xclap.load("electrode", {
+  "server-watch": {
+    dep: [".init-bundle.valid.log"],
+    desc: "Start app's node server in watch mode with nodemon",
+    task: () => {
+      const watches = [Path.join(eTmpDir, "bundle.valid.log"), AppMode.src.server, "config"]
+      .map(n => `--watch ${n}`)
+      .join(" ");
+      AppMode.setEnv(AppMode.src.dir);
+      const node = AppMode.isSrc ? `babel-node --plugins remove-webpack` : "node";
+      const serverIndex = Path.join(AppMode.src.server, "index.js");
+      return exec(
+        `nodemon`,
+        `--delay 1 -C --ext js,jsx,json,yaml ${watches}`,
+        `--exec ${node} ${serverIndex}`
+      );
+    }
+  },
+
+  "build-lib:client": {
+    desc: false,
+    dep: [".clean.lib:client", ".mk.lib.client.dir", ".build.client.babelrc"],
+    task: mkCmd(
+      `babel --plugins remove-webpack`,
+      `--source-maps=inline --copy-files --out-dir ${AppMode.lib.client}`,
+      `${AppMode.src.client}`
+    )
+  },
+});
