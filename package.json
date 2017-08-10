@@ -45,8 +45,8 @@
     "lodash": "^4.10.1"
   },
   "devDependencies": {
-    "babel-plugin-dynamic-import-webpack": "^1.0.1",
-    "babel-plugin-remove-webpack": "^1.1.0",
+    "babel-plugin-dynamic-import-node": "^1.0.2",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "electrode-archetype-react-app-dev": "^3.0.0"
   }
 }

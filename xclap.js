@@ -61,7 +61,7 @@ xclap.load("electrode", {
       .map(n => `--watch ${n}`)
       .join(" ");
       AppMode.setEnv(AppMode.src.dir);
-      const node = AppMode.isSrc ? `babel-node --plugins remove-webpack` : "node";
+      const node = AppMode.isSrc ? `babel-node --plugins dynamic-import-node` : "node";
       const serverIndex = Path.join(AppMode.src.server, "index.js");
       return exec(
         `nodemon`,
@@ -75,7 +75,7 @@ xclap.load("electrode", {
     desc: false,
     dep: [".clean.lib:client", ".mk.lib.client.dir", ".build.client.babelrc"],
     task: mkCmd(
-      `babel --plugins remove-webpack`,
+      `babel --plugins dynamic-import-node`,
       `--source-maps=inline --copy-files --out-dir ${AppMode.lib.client}`,
       `${AppMode.src.client}`
     )
