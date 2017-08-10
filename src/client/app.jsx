@@ -4,11 +4,8 @@
 
 import React from "react";
 import { render } from "react-dom";
-import { routes } from "./routes";
 import { Router, browserHistory } from "react-router";
-import { createStore } from "redux";
 import { Provider } from "react-redux";
-import rootReducer from "./reducers";
 //
 
 //
@@ -17,11 +14,25 @@ import rootReducer from "./reducers";
 // DOM is created.
 //
 
+import {buildApp} from "electrode-mantra-core";
+import initContext from "./configs/context";
+
+import modules from "./modules";
+
 window.webappStart = () => {
-  const initialState = window.__PRELOADED_STATE__;
-  const store = createStore(rootReducer, initialState);
+  const context = initContext();
+  buildApp(modules, context);
+
+  const {Router: {routes}, Store} = context;
+
+  let enhancer;
+  if (process.env.NODE_ENV !== "production") {
+    enhancer = window.__REDUX_DEVTOOLS_EXTENSION__ &&
+      window.__REDUX_DEVTOOLS_EXTENSION__();
+  }
+
   render(
-    <Provider store={store}>
+    <Provider store={Store.getStore(window.__PRELOADED_STATE__, enhancer)}>
       <Router history={browserHistory}>{routes}</Router>
     </Provider>,
     document.querySelector(".js-content")

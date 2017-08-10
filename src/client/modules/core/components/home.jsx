@@ -15,17 +15,16 @@
  */
 
 import React from "react";
-import "../styles/normalize.css";
-import "../styles/raleway.css";
-import skeleton from "../styles/skeleton.css";
-import custom from "../styles/custom.css";
-import electrodePng from "../images/electrode.png";
-import DemoStates from "./demo-states";
-import DemoPureStates from "./demo-pure-states";
-import { DemoButtons } from "./demo-buttons";
+import {Link} from "react-router";
+import "../../../styles/normalize.css";
+import "../../../styles/raleway.css";
+import skeleton from "../../../styles/skeleton.css";
+import custom from "../../../styles/custom.css";
+import electrodePng from "../../../images/electrode.png";
+
 /**/
 
-export default () =>
+export default ({children}) =>
   <div className={custom.container}>
     {/**/}
 
@@ -36,15 +35,12 @@ export default () =>
       </h2>
     </section>
 
-    <div className={custom["docs-section"]}>
-      <DemoStates />
-    </div>
+    <ul>
+      <li><Link to="/states">Demo Managing States with Redux</Link></li>
+      <li><Link to="/pure-states">Demo Managing States in Pure Functional Component</Link></li>
+      <li><Link to="/buttons">demo CSS modules with buttons from skeleton</Link></li>
+    </ul>
 
-    <div className={custom["docs-section"]}>
-      <DemoPureStates />
-    </div>
+    {children}
 
-    <div className={custom["docs-section"]}>
-      <DemoButtons />
-    </div>
   </div>;

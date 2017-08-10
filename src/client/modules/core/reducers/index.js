@@ -1,6 +1,4 @@
-import {combineReducers} from "redux";
-
-const checkBox = (store, action) => {
+export const checkBox = (store, action) => {
   if (action.type === "TOGGLE_CHECK") {
     return {
       checked: !store.checked
@@ -10,7 +8,7 @@ const checkBox = (store, action) => {
   return store || {checked: false};
 };
 
-const number = (store, action) => {
+export const number = (store, action) => {
   if (action.type === "INC_NUMBER") {
     return {
       value: store.value + 1
@@ -24,7 +22,3 @@ const number = (store, action) => {
   return store || {value: 0};
 };
 
-export default combineReducers({
-  checkBox,
-  number
-});
