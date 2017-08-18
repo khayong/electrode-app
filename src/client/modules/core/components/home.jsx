@@ -38,7 +38,8 @@ export default ({children}) =>
     <ul>
       <li><Link to="/states">Demo Managing States with Redux</Link></li>
       <li><Link to="/pure-states">Demo Managing States in Pure Functional Component</Link></li>
-      <li><Link to="/buttons">demo CSS modules with buttons from skeleton</Link></li>
+      <li><Link to="/buttons">Demo CSS modules with buttons from skeleton</Link></li>
+      <li><Link to="/material-ui">Demo Material UI components</Link></li>
     </ul>
 
     {children}

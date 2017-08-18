@@ -16,6 +16,7 @@ import { Provider } from "react-redux";
 
 import {buildApp} from "electrode-mantra-core";
 import initContext from "./configs/context";
+import {MuiThemeProvider} from "material-ui/styles";
 
 import modules from "./modules";
 
@@ -23,7 +24,7 @@ window.webappStart = () => {
   const context = initContext();
   buildApp(modules, context);
 
-  const {Router: {routes}, Store} = context;
+  const {Router: {routes}, Store, Theme} = context;
 
   let enhancer;
   if (process.env.NODE_ENV !== "production") {
@@ -32,9 +33,17 @@ window.webappStart = () => {
   }
 
   render(
-    <Provider store={Store.getStore(window.__PRELOADED_STATE__, enhancer)}>
-      <Router history={browserHistory}>{routes}</Router>
-    </Provider>,
-    document.querySelector(".js-content")
+    <MuiThemeProvider theme={Theme}>
+      <Provider store={Store.getStore(window.__PRELOADED_STATE__, enhancer)}>
+        <Router history={browserHistory}>{routes}</Router>
+      </Provider>
+    </MuiThemeProvider>,
+    document.querySelector(".js-content"),
+    () => {
+      const jssStyles = document.getElementById('jss-server-side');
+      if (jssStyles && jssStyles.parentNode) {
+        jssStyles.parentNode.removeChild(jssStyles);
+      }
+    },
   );
 };

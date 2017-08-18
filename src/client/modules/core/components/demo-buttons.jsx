@@ -9,7 +9,7 @@ import custom from "../../../styles/custom.css";
 export const DemoButtons = () =>
   <div>
     <h6 className={custom["docs-header"]}>
-      demo CSS modules with buttons from <a href="http://getskeleton.com/">skeleton</a>
+      Demo CSS modules with buttons from <a href="http://getskeleton.com/">skeleton</a>
     </h6>
     <div className={custom["docs-example"]}>
       <a className={skeleton.button} href="#">Anchor button</a>

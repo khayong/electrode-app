@@ -33,6 +33,13 @@ export default function (injectDeps, {Router, Store}, actions) {
           cb(null, module.DemoButtons)
         })
       },
+    }, {
+      path: "material-ui",
+      getComponent(nextState, cb) {
+        import(/* webpackChunkName: "buttons" */ "./components/demo-material-ui").then(module => {
+          cb(null, module.DemoMaterialUi)
+        })
+      },
     }]
   });
 }
