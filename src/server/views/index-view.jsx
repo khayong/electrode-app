@@ -5,7 +5,6 @@
 import React from "react";
 import ReactDomServer from "react-dom/server";
 import {RouterContext} from "react-router";
-import {Provider} from "react-redux";
 import {JssProvider, SheetsRegistry} from "react-jss";
 import {create}  from "jss";
 import preset from "jss-preset-default";
@@ -14,6 +13,8 @@ import createGenerateClassName from "material-ui/styles/createGenerateClassName"
 import CleanCSS from "clean-css";
 import assert from "assert";
 import ReduxRouterEngine from "electrode-redux-router-engine";
+import {config} from "electrode-confippet";
+import {ApolloProvider} from "react-apollo";
 
 import {buildApp} from "electrode-mantra-core";
 import initContext from "../../client/configs/context";
@@ -21,6 +22,22 @@ import initContext from "../../client/configs/context";
 import modules from "../../client/modules";
 
 const Promise = require("bluebird");
+
+const BAD_CHARS_REGEXP = /[<\u2028\u2029]/g;
+const REPLACEMENTS_FOR_BAD_CHARS = {
+  "<": "\\u003C",
+  "\u2028": "\\u2028",
+  "\u2029": "\\u2029"
+};
+
+function escapeBadChars(sourceString) {
+  return sourceString.replace(BAD_CHARS_REGEXP, (match) => REPLACEMENTS_FOR_BAD_CHARS[match]);
+}
+
+function stringifyPreloadedState(state) {
+  return `window.__PRELOADED_STATE__ = ${escapeBadChars(JSON.stringify(state))};` +
+    `window.__SIMPLE_API_ENDPOINT__ = '${config.$("apollo.uri")}';`
+}
 
 //
 // This function is exported as the content for the webapp plugin.
@@ -38,7 +55,7 @@ module.exports = (req) => {
     const context = initContext();
     buildApp(modules, context);
 
-    const {Router: {routes}, Store, Theme} = context;
+    const {Router: {routes}, Store, Theme, ApolloClient} = context;
 
     const createReduxStore = (req, match) => {
       const initialState = {
@@ -64,12 +81,15 @@ module.exports = (req) => {
         const jss = create(preset());
         jss.options.createGenerateClassName = createGenerateClassName;
 
+        const client = ApolloClient.getClient(config.$("apollo.uri"), true);
+        Store.injectReducer({apollo: client.reducer()})
+
         const element = React.createElement(
           JssProvider, {registry: sheetsRegistry, jss},
           React.createElement(
             MuiThemeProvider, {theme: Theme, sheetsManager: new Map()},
             React.createElement(
-              Provider, { store },
+              ApolloProvider, { store, client },
               React.createElement(RouterContext, match.renderProps)
             )
           )
@@ -87,7 +107,7 @@ module.exports = (req) => {
       }
     }
 
-    app.routesEngine = new ReduxRouterEngine({routes, createReduxStore, renderToString});
+    app.routesEngine = new ReduxRouterEngine({routes, createReduxStore, renderToString, stringifyPreloadedState});
   }
 
   return app.routesEngine.render(req);

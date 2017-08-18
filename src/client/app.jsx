@@ -5,7 +5,8 @@
 import React from "react";
 import { render } from "react-dom";
 import { Router, browserHistory } from "react-router";
-import { Provider } from "react-redux";
+import { applyMiddleware, compose } from "redux";
+import { ApolloProvider } from 'react-apollo';
 //
 
 //
@@ -24,19 +25,23 @@ window.webappStart = () => {
   const context = initContext();
   buildApp(modules, context);
 
-  const {Router: {routes}, Store, Theme} = context;
+  const {Router: {routes}, Store, Theme, ApolloClient} = context;
 
-  let enhancer;
-  if (process.env.NODE_ENV !== "production") {
-    enhancer = window.__REDUX_DEVTOOLS_EXTENSION__ &&
-      window.__REDUX_DEVTOOLS_EXTENSION__();
-  }
+  const client = ApolloClient.getClient(window.__SIMPLE_API_ENDPOINT__);
+  Store.injectReducer({apollo: client.reducer()})
+
+  let enhancer = compose(
+    applyMiddleware(client.middleware()),
+    process.env.NODE_ENV !== "production" && window.__REDUX_DEVTOOLS_EXTENSION__
+      ? window.__REDUX_DEVTOOLS_EXTENSION__()
+      : f => f
+  );
 
   render(
     <MuiThemeProvider theme={Theme}>
-      <Provider store={Store.getStore(window.__PRELOADED_STATE__, enhancer)}>
+      <ApolloProvider store={Store.getStore(window.__PRELOADED_STATE__, enhancer)} client={client}>
         <Router history={browserHistory}>{routes}</Router>
-      </Provider>
+      </ApolloProvider>
     </MuiThemeProvider>,
     document.querySelector(".js-content"),
     () => {

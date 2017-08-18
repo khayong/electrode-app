@@ -45,5 +45,8 @@ module.exports = {
         "ignoreErrors":true
       }
     }
+  },
+  "apollo": {
+    "uri": ""
   }
 };
